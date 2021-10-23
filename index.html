@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Video Game Graphics Course</title>
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+                overflow: hidden;
+                color: white;
+                font-family: Tahoma,sans-serif;
+            }
+            p {
+                margin: 50px;
+            }
+            h1 {
+                color: #f90;
+            }
+            h1, h2 {
+                margin: 50px;
+            }
+
+            a {
+                background-color: #555;
+                color: white;
+                padding: 1em 1.5em;
+                text-decoration: none;
+            }
+            a:hover {
+                background-color: #f90;
+                color: #000;
+            }
+
+            canvas {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="module">
+            import PicoGL from "./node_modules/picogl/build/module/picogl.js";
+
+            const loadScript = window.location.search.substring(1);
+            if (loadScript && loadScript.endsWith(".js")) {
+                document.title = loadScript + " - " + document.title;
+
+                let canvas = document.createElement("canvas");
+                canvas.width = window.innerWidth * window.devicePixelRatio;
+                canvas.height = window.innerHeight * window.devicePixelRatio;
+                document.body.appendChild(canvas);
+
+                window.app = PicoGL.createApp(canvas, {alpha: false, antialias: true});
+                window.addEventListener("resize", function() {
+                    app.resize(window.innerWidth, window.innerHeight);
+                });
+
+                import(loadScript);
+            }
+        </script>
+        <p>
+            <h1>Video Game Graphics Course</h1>
+            <h2>Slides</h2>
+            <p>
+                <a target="_blank" href="https://docs.google.com/presentation/d/17JN9MkPOFQ1eJwJuUsdYvhJqQ2nvRHDOCaAHoDjWVic/edit?usp=sharing">01 Introduction</a>
+                <a target="_blank" href="https://docs.google.com/presentation/d/18LY4unj-rtaXv2AFMYGiiNuihout3v7ae9UA5TZ-jv4/edit?usp=sharing">02 Rendering</a>
+                <a target="_blank" href="https://docs.google.com/presentation/d/1rGOKgFTPXNZzPlJfnSFJFSUdYksTbPS1MYEnPaEdDNA/edit?usp=sharing">03 GPU</a>
+            </p>
+            <h2>Demos</h2>
+            <p>
+                <a href="?./demos/simple-rendering.js">02 Simple rendering</a>
+            </p>
+        </p>
+    </body>
+</html>
