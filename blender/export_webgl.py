@@ -29,8 +29,8 @@ class ExportWebGL(bpy.types.Operator, ExportHelper):
     filename_ext = ".js"
     filter_glob = StringProperty(default="*.js", options={'HIDDEN'})
 
-    opt_FloatDecimals = IntProperty(name="Number of decimals on floats", description="Number of decimals on floats", default=4)
-    opt_Scale = FloatProperty(name="Scale", description="Scale", default=1.0)
+    opt_FloatDecimals = 4 #IntProperty(name="Number of decimals on floats", description="Number of decimals on floats", default=4)
+    opt_Scale = 1.0 #FloatProperty(name="Scale", description="Scale", default=1.0)
 
     @classmethod
     def poll(cls, context):
@@ -62,14 +62,14 @@ class ExportWebGL(bpy.types.Operator, ExportHelper):
         float_format = "{:." + str(self.opt_FloatDecimals) + "f}"
         with open(path, 'w') as f:
             f.write("// " + object.name + "\n")
-            f.write("export const positions = new Float32Array([ {1} ]);\n".format(
-                object.name, ",".join([float_format.format(v * self.opt_Scale) for v in vertices])))
-            f.write("export const normals = new Float32Array([ {1} ]);\n".format(
-                object.name, ",".join([float_format.format(n * self.opt_Scale) for n in normals])))
-            f.write("export const uvs = new Float32Array([ {1} ]);\n".format(
-                object.name, ",".join([float_format.format(n) for n in uvs])))
-            f.write("export const indices = new Uint32Array([ {1} ]);\n".format(
-                object.name, ",".join([str(i) for i in indices])))
+            f.write("export const positions = new Float32Array([ {0} ]);\n".format(
+                ",".join([float_format.format(v * self.opt_Scale) for v in vertices])))
+            f.write("export const normals = new Float32Array([ {0} ]);\n".format(
+                ",".join([float_format.format(n * self.opt_Scale) for n in normals])))
+            f.write("export const uvs = new Float32Array([ {0} ]);\n".format(
+                ",".join([float_format.format(n) for n in uvs])))
+            f.write("export const indices = new Uint32Array([ {0} ]);\n".format(
+                ",".join([str(i) for i in indices])))
 
     def execute(self, context):
         self.export_as_webgl_arrays(self.filepath)
