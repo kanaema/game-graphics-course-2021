@@ -56,7 +56,7 @@
 
                 window.app = PicoGL.createApp(canvas, {alpha: false, antialias: true});
                 window.addEventListener("resize", function() {
-                    app.resize(window.innerWidth, window.innerHeight);
+                    app.resize(window.innerWidth * devicePixelRatio, window.innerHeight * devicePixelRatio);
                 });
 
                 import(loadScript);

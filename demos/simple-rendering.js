@@ -143,6 +143,7 @@ const indices = new Uint16Array([
 let fragmentShader = `
     #version 300 es
     precision highp float;
+    uniform float time;
     
     in vec4 color;
     
@@ -150,6 +151,8 @@ let fragmentShader = `
     
     void main()
     {
+        // gl_FragCoord - builtin variable with screen coordinate
+
         outColor = color;
     }
 `;
