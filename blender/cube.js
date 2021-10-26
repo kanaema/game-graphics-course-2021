@@ -112,7 +112,7 @@ export const uvs = new Float32Array([
     0.0, 0.0,
 ]);
 
-export const indices = new Uint16Array([
+export const indices = new Uint32Array([
     // front
     2, 1, 0,
     0, 3, 2,

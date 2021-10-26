@@ -106,7 +106,7 @@ const normals = new Float32Array([
     1.0, 0.0, 0.0,
 ]);
 
-const indices = new Uint16Array([
+const indices = new Uint32Array([
     // front
     2, 1, 0,
     0, 3, 2,
@@ -203,7 +203,7 @@ let program = app.createProgram(vertexShader.trim(), fragmentShader.trim());
 let vertexArray = app.createVertexArray()
     .vertexAttributeBuffer(0, app.createVertexBuffer(PicoGL.FLOAT, 3, positions))
     .vertexAttributeBuffer(1, app.createVertexBuffer(PicoGL.FLOAT, 3, normals))
-    .indexBuffer(app.createIndexBuffer(PicoGL.UNSIGNED_SHORT, 3, indices));
+    .indexBuffer(app.createIndexBuffer(PicoGL.UNSIGNED_INT, 3, indices));
 
 let projMatrix = mat4.create();
 let viewMatrix = mat4.create();
