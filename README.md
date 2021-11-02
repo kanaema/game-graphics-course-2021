@@ -26,7 +26,7 @@ This repository contains a webpage, which should be checked out and deployed on 
     
 3. Open cloned repo in VSCode (GitHub Desktop -> Repository -> Open in VSCode)
 
-4. Get code dependencies: from VSCode menu Terminal -> Run Task -> `npm install` 
+4. Get code dependencies: from VSCode menu Terminal -> New Terminal -> `npm install` 
 
 4. Install VSCode "Live Server" extension. Click "Go Live" button in VSCode bottom bar to start a local web server
 
