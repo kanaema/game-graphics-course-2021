@@ -8,12 +8,15 @@
             body {
                 margin: 0;
                 background-color: black;
-                overflow: hidden;
+                /* overflow: hidden; */
                 color: white;
                 font-family: Tahoma,sans-serif;
             }
             p {
-                margin: 50px;
+                margin: 20px 50px;
+            }
+            ul {
+                margin: 10px 50px;
             }
             h1 {
                 color: #f90;
@@ -47,6 +50,8 @@
 
             const loadScript = window.location.search.substring(1);
             if (loadScript && loadScript.endsWith(".js")) {
+                document.getElementById("menu").style.display = "none";
+                document.body.style.overflow = "hidden";
                 document.title = loadScript + " - " + document.title;
 
                 let canvas = document.createElement("canvas");
@@ -62,8 +67,31 @@
                 import(loadScript);
             }
         </script>
-        <p>
+        <div id="menu">
             <h1>Video Game Graphics Course 2021</h1>
+            <h2>Assignment</h2>
+            <p>
+                Create a demo based on examples, which would combine several rendering algorithms together<br>
+                Your work must be pushed to your forked github. It will be 50% of your result mark<br>
+                Your demo must include one of the lighting models:
+            </p>
+            <ul>
+                <li>Phong lighting model</li>
+                <li>Blinn-Phong lighting model</li>
+                <li>Lambert lighting model</li>
+            </ul>
+            <p>Must include atleast one UV-mapped texture<br>
+            And any two of the following algorithms:</p>
+            <ul>
+                <li>Cubemap reflection</li>
+                <li>Planar reflection</li>
+                <li>Shadowmaps</li>
+                <li>Any post-processing</li>
+            </ul>
+            <p>
+                Use demos/assignment.js as a boilerplate template:
+                <a href="?./demos/assignment.js">Assignment</a>
+            </p>
             <h2>Slides</h2>
             <p>
                 <a target="_blank" href="https://docs.google.com/presentation/d/17JN9MkPOFQ1eJwJuUsdYvhJqQ2nvRHDOCaAHoDjWVic/edit?usp=sharing">01 Introduction</a>
@@ -87,6 +115,6 @@
                 <a href="?./demos/reflections.js">06 Reflections</a>
                 <a href="?./demos/shadows.js">07 Shadows</a>
             </p>
-        </p>
+        </div>
     </body>
 </html>
