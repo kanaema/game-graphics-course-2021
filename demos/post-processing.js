@@ -69,8 +69,8 @@ let postFragmentShader = `
     vec4 depthOfField(vec4 col, float depth, vec2 uv) {
         vec4 blur = vec4(0.0);
         float n = 0.0;
-        for (float u = -1.0; u <= 1.0; u += 0.2)    
-            for (float v = -1.0; v <= 1.0; v += 0.2) {
+        for (float u = -1.0; u <= 1.0; u += 0.4)    
+            for (float v = -1.0; v <= 1.0; v += 0.4) {
                 float factor = clamp((depth - 0.993) * 200.0, 0.0, 1.0);
                 blur += texture(tex, uv + vec2(u, v) * factor * 0.02);
                 n += 1.0;
