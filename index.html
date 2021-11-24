@@ -47,6 +47,8 @@
         <script type="module">
             import PicoGL from "./node_modules/picogl/build/module/picogl.js";
 
+            window.midi = [];
+
             const loadScript = window.location.search.substring(1);
             if (loadScript && loadScript.endsWith(".js")) {
                 document.getElementById("menu").style.display = "none";
@@ -63,7 +65,24 @@
                     app.resize(window.innerWidth * devicePixelRatio, window.innerHeight * devicePixelRatio);
                 });
 
-                import(loadScript);
+                await import(loadScript);
+            }
+
+            window.midiAccess = await navigator.requestMIDIAccess();
+            if (midiAccess.outputs.size) {
+                window.midiOutput = midiAccess.outputs.values().next().value;
+                for (let i = 0; i <= midi.length; i++) {
+                    midiOutput.send([186, i, Number(midi[i]) * 127]);
+                }
+            }
+            if (midiAccess.inputs.size) {
+                window.midiInput = midiAccess.inputs.values().next().value;
+                midiInput.onmidimessage = (message) => {
+                    // controller changed
+                    if (message.data[0] === 186) {
+                        midi[message.data[1]] = message.data[2] / 127;
+                    }
+                }
             }
         </script>
         <div id="menu">

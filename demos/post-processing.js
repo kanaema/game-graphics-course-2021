@@ -71,7 +71,7 @@ let postFragmentShader = `
         float n = 0.0;
         for (float u = -1.0; u <= 1.0; u += 0.4)    
             for (float v = -1.0; v <= 1.0; v += 0.4) {
-                float factor = clamp((depth - 0.993) * 200.0, 0.0, 1.0);
+                float factor = clamp(abs(depth - 0.995) * 450.0, 0.0, 1.0);
                 blur += texture(tex, uv + vec2(u, v) * factor * 0.02);
                 n += 1.0;
             }                
@@ -89,7 +89,7 @@ let postFragmentShader = `
     
     float random(vec2 seed) {
         return texture(noiseTex, seed * 5.0 + sin(time * 543.12) * 54.12).r - 0.5;
-    } 
+    }
     
     void main() {
         vec4 col = texture(tex, v_position.xy);
@@ -99,10 +99,10 @@ let postFragmentShader = `
         col = depthOfField(col, depth, v_position.xy);
 
         // Noise         
-        col.rgb += (1.0 - col.rgb) * random(v_position.xy) * 0.1;
+        col.rgb += (2.0 - col.rgb) * random(v_position.xy) * 0.1;
         
         // Contrast + Brightness
-        col = pow(col, vec4(1.5)) * 2.0;
+        col = pow(col, vec4(1.8)) * 0.8;
         
         // Color curves
         col.rgb = col.rgb * vec3(1.2, 1.1, 1.0) + vec3(0.0, 0.05, 0.2);
@@ -175,17 +175,19 @@ async function loadTexture(fileName) {
         .texture("depthTex", depthTarget)
         .texture("noiseTex", app.createTexture2D(await loadTexture("noise.png")));
 
-    let cameraPosition = vec3.fromValues(0, 0, 9);
+    let time = 0, previousTime = 0, rotation = 0;
 
+    function draw(timestamp) {
+        requestAnimationFrame(draw);
+        previousTime = time;
+        time = timestamp / 1000;
+        if (!document.hasFocus()) return;
 
-    let startTime = new Date().getTime() / 1000;
-
-    function draw() {
-        let time = new Date().getTime() / 1000 - startTime;
-
+        let cameraPosition = vec3.fromValues(0, 0, 9);
+        rotation += (time - previousTime) * 0.5;
         mat4.perspective(projectionMatrix, Math.PI / 10, app.width / app.height, 0.05, 50.0);
         mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
-        quat.fromEuler(modelRotation, Math.cos(time * 0.5) * 20 - 90, Math.sin(time * 0.5) * 20, 0)
+        quat.fromEuler(modelRotation, Math.cos(rotation) * 20 - 90, Math.sin(rotation) * 20, 0)
         mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
 
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
@@ -223,8 +225,6 @@ async function loadTexture(fileName) {
            .disable(PicoGL.CULL_FACE);
         postDrawCall.uniform("time", time);
         postDrawCall.draw();
-
-        requestAnimationFrame(draw);
     }
     requestAnimationFrame(draw);
 })();
