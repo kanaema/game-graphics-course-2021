@@ -71,7 +71,7 @@ let postFragmentShader = `
         float n = 0.0;
         for (float u = -1.0; u <= 1.0; u += 0.4)    
             for (float v = -1.0; v <= 1.0; v += 0.4) {
-                float factor = clamp(abs(depth - 0.995) * 450.0, 0.0, 1.0);
+                float factor = abs(depth - 0.995) * 350.0;
                 blur += texture(tex, uv + vec2(u, v) * factor * 0.02);
                 n += 1.0;
             }                
