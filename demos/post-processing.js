@@ -79,10 +79,14 @@ let postFragmentShader = `
     }
     
     vec4 ambientOcclusion(vec4 col, float depth, vec2 uv) {
-        for (float u = -1.0; u <= 1.0; u += 0.2)    
-            for (float v = -1.0; v <= 1.0; v += 0.2) {                
-                float diff = abs(depth - texture(depthTex, uv + vec2(u, v) * 0.01).r);                                
-                col *= 1.0 - diff * 30.0;
+        if (depth == 1.0) return col;
+        for (float u = -2.0; u <= 2.0; u += 0.4)    
+            for (float v = -2.0; v <= 2.0; v += 0.4) {                
+                float d = texture(depthTex, uv + vec2(u, v) * 0.01).r;
+                if (d != 1.0) {
+                    float diff = abs(depth - d);
+                    col *= 1.0 - diff * 30.0;
+                }
             }
         return col;        
     }   
@@ -94,6 +98,11 @@ let postFragmentShader = `
     void main() {
         vec4 col = texture(tex, v_position.xy);
         float depth = texture(depthTex, v_position.xy).r;
+        
+        // Chromatic aberration 
+        //vec2 caOffset = vec2(0.01, 0.0);
+        //col.r = texture(tex, v_position.xy - caOffset).r;
+        //col.b = texture(tex, v_position.xy + caOffset).b;
         
         // Depth of field
         col = depthOfField(col, depth, v_position.xy);
