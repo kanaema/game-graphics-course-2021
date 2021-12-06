@@ -1,8 +1,8 @@
 export const positions = new Float32Array([
-    -2, 0, 2,
-    2, 0, 2,
-    -2, 0, -2,
-    2, 0, -2,
+    1, 2, -3,
+    -1, 2, -3,
+    1, -2, -2,
+    -1, -2, -2,
 ]);
 
 export const normals = new Float32Array([
