@@ -25,9 +25,9 @@ let skyboxTriangles = new Uint32Array([
 
 let ambientLightColor = vec3.fromValues(0.0, 0.05, 0.1);
 let numberOfLights = 2;
-let lightColors = [vec3.fromValues(1.0, 0.0, 0.4), vec3.fromValues(0.0, 0.1, 0.2), vec3.fromValues(1.0, 0.5, 0.1)];
-let lightInitialPositions = [vec3.fromValues(8, 0, 4), vec3.fromValues(-8, 0, 4)];
-let lightPositions = [vec3.create(), vec3.create(), vec3.create()];
+let lightColors = [vec3.fromValues(1.0, 0.0, 0.4), vec3.fromValues(0.0, 0.2, 0.3)];
+let lightInitialPositions = [vec3.fromValues(5, 0, 2), vec3.fromValues(-5, 0, 2)];
+let lightPositions = [vec3.create(), vec3.create()];
 
 // language=GLSL
 let lightCalculationShader = `
@@ -45,10 +45,10 @@ let lightCalculationShader = `
             vec3 lightDirection = normalize(lightPositions[i] - position);
             
             // Lambertian reflection (ideal diffuse of matte surfaces) is also a part of Phong model                        
-            float diffuse = max(dot(lightDirection, normal), 0.0);                                    
+            float diffuse = max(dot(lightDirection, normal), -0.1);                                    
                       
             // Phong specular highlight 
-            float specular = pow(max(dot(viewDirection, reflect(-lightDirection, normal)), 0.0), 50.0);
+            float specular = pow(max(dot(viewDirection, reflect(-lightDirection, normal)), 0.0), 30.0);
             
             // Blinn-Phong improved specular highlight                        
             //float specular = pow(max(dot(normalize(lightDirection + viewDirection), normal), 0.0), 200.0);
@@ -65,7 +65,7 @@ let fragmentShader = `
     precision highp float;
     ${lightCalculationShader}
     
-    uniform samplerCube cubemap;    
+    //uniform samplerCube cubemap;    
     
     in vec3 vPosition;  
     in vec3 vNormal;
@@ -181,7 +181,7 @@ let mirrorFragmentShader = `
         vec2 screenPos = gl_FragCoord.xy / screenSize;
         
         // 0.03 is a mirror distortion factor, try making a larger distortion         
-        screenPos.x += (texture(distortionMap, vUv).r - 0.5) * 0.03;
+        screenPos.x += (texture(distortionMap, vUv).r - 0.5) * 0.09;
         outColor = texture(reflectionTex, screenPos);
     }
 `;
@@ -235,7 +235,7 @@ let skyboxVertexShader = `
     }
 `;
 
-app.enable(PicoGL.DEPTH_TEST)
+app.enable(PicoGL.DEPTH_TEST);
 
 let program = app.createProgram(vertexShader.trim(), fragmentShader.trim());
 let maskProgram = app.createProgram(maskVertexShader.trim(), maskFragmentShader.trim());
@@ -263,7 +263,7 @@ let mirrorArray = app.createVertexArray()
     .indexBuffer(app.createIndexBuffer(PicoGL.UNSIGNED_INT, 3, mirrorIndices));
 
 // Change the reflection texture resolution to checkout the difference
-let reflectionResolutionFactor = 0.3;
+let reflectionResolutionFactor = 0.2;
 let reflectionColorTarget = app.createTexture2D(app.width * reflectionResolutionFactor, app.height * reflectionResolutionFactor, {magFilter: PicoGL.LINEAR});
 let reflectionDepthTarget = app.createTexture2D(app.width * reflectionResolutionFactor, app.height * reflectionResolutionFactor, {internalFormat: PicoGL.DEPTH_COMPONENT16});
 let reflectionBuffer = app.createFramebuffer().colorTarget(0, reflectionColorTarget).depthTarget(reflectionDepthTarget);
@@ -283,7 +283,6 @@ let maskViewProjMatrix = mat4.create();
 let maskModelMatrix = mat4.create();
 let maskModelViewMatrix = mat4.create();
 let maskModelViewProjectionMatrix = mat4.create();
-let rotationXMatrix = mat4.create();
 let rotationYMatrix = mat4.create();
 
 let mirrorModelMatrix = mat4.create();
@@ -340,7 +339,7 @@ async function loadTexture(fileName) {
     });
 
     let drawCall = app.createDrawCall(program, vertexArray)
-        .texture("cubemap", cubemap)
+        //.texture("cubemap", cubemap)
         .uniform("ambientLightColor", ambientLightColor);
 
     let maskDrawCall = app.createDrawCall(maskProgram, maskVertexArray)
@@ -352,7 +351,7 @@ async function loadTexture(fileName) {
 
     let mirrorDrawCall = app.createDrawCall(mirrorProgram, mirrorArray)
         .texture("reflectionTex", reflectionColorTarget)
-        .texture("distortionMap", app.createTexture2D(await loadTexture("noise.png")));
+        .texture("distortionMap", app.createTexture2D(await loadTexture("vectors.jpg")));
 
     function renderReflectionTexture()
     {
@@ -428,21 +427,15 @@ async function loadTexture(fileName) {
         vec3.rotateY(cameraPosition, vec3.fromValues(0, 3, 3.5), vec3.fromValues(0, 0, 0), time * 0.049);
         mat4.lookAt(viewMatrix, cameraPosition, vec3.fromValues(0, 2, 0), vec3.fromValues(0, 1, 0));
         
-
-        //mat4.fromXRotation(rotateXMatrix, time * 0.1136 - Math.PI / 2);
         mat4.fromZRotation(rotateYMatrix, time * 0.2235);
-        //mat4.mul(modelMatrix, rotateXMatrix, rotateYMatrix);
 
-        //mat4.fromXRotation(maskRotateXMatrix, time * 0.1136 - Math.PI / 2);
-        //mat4.fromZRotation(maskRotateYMatrix, time * 0.2235);
         mat4.fromYRotation(rotationYMatrix, time * 0.2354);
-        //mat4.mul(maskModelMatrix, maskRotateXMatrix, maskRotateYMatrix);
 
 
-        //mat4.fromXRotation(rotateXMatrix, 0.3);
+        mat4.fromXRotation(rotateXMatrix, 0.3);
         mat4.fromYRotation(rotateYMatrix, time * 0.2354);
-        mat4.mul(mirrorModelMatrix, rotateYMatrix, rotateXMatrix);
-        mat4.translate(mirrorModelMatrix, mirrorModelMatrix, vec3.fromValues(0, 1.4, 0));
+        mat4.mul(mirrorModelMatrix, maskMirrorModelMatrix, rotateYMatrix, rotateXMatrix);
+        mat4.translate(mirrorModelMatrix, mirrorModelMatrix, vec3.fromValues(0, 1.4, -0.7));
 
         for (let i = 0; i < numberOfLights; i++) {
             vec3.rotateZ(lightPositions[i], lightInitialPositions[i], vec3.fromValues(0, 0, 0), time);
@@ -454,7 +447,7 @@ async function loadTexture(fileName) {
         drawCall.uniform("lightColors[0]", colorsBuffer);
 
         renderReflectionTexture();
-        drawObjects(cameraPosition, viewMatrix);
+        drawObjects(cameraPosition, viewMatrix, maskViewMatrix);
         drawMirror();
 
         requestAnimationFrame(draw);
